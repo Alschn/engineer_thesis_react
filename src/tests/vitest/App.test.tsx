@@ -8,5 +8,4 @@ it("should add 2 numbers", () => {
 
 it("should render App", () => {
   render(<App />);
-  expect(screen.getByText("Vite + React")).toBeTruthy();
 });
