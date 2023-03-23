@@ -1,33 +1,31 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import "./App.css";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bytemd/dist/index.css";
+import "highlight.js/styles/default.css";
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+import { AuthProvider } from "./context/AuthContext";
+import Router from "./routing/Router";
+
+const queryClient = new QueryClient();
 
 function App() {
-  const [count, setCount] = useState(0);
-
-  const increment = () => setCount((count) => count + 1);
-
   return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={increment}>count is {count}</button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </div>
+    <>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        theme="dark"
+        hideProgressBar={false}
+        pauseOnFocusLoss={false}
+        pauseOnHover={false}
+      />
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <Router/>
+        </AuthProvider>
+      </QueryClientProvider>
+    </>
   );
 }
 
