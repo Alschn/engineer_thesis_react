@@ -84,7 +84,7 @@ const PostsList: FC = () => {
       // set default values
       // todo: refactor this, maybe use reducer here
       setPage(1);
-      setPageSize({ value: 10, label: "10" });
+      setPageSize(pageSizes.find((o) => o.value === 50)!);
       setOrdering(orderingOptions.find((o) => o.value === "-created_at")!);
       setSearch("");
       // clear filters
