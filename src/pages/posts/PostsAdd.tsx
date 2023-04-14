@@ -8,6 +8,7 @@ import PostsApi, { PostCreatePayload } from "../../api/posts";
 import TagsApi from "../../api/tags";
 import { SelectOption } from "../../api/types";
 import MarkdownEditor from "../../components/markdown/MarkdownEditor";
+import { fileToBase64String } from "../../utils/fileUpload";
 
 const loadOptions = (inputValue: string) => {
   return TagsApi.getAll(
@@ -23,6 +24,8 @@ const PostsAdd: FC = () => {
   const [description, setDescription] = useState<string>("");
   const [body, setBody] = useState<string>("");
   const [tags, setTags] = useState<any[]>([]);
+  const [isPublished, setIsPublished] = useState<boolean>(true);
+  const [thumbnails, setThumbnails] = useState<FileList | null>(null);
 
   const navigate = useNavigate();
 
@@ -42,7 +45,7 @@ const PostsAdd: FC = () => {
     }
   });
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     if (!body) {
@@ -50,14 +53,18 @@ const PostsAdd: FC = () => {
       return;
     }
 
+    const thumbnailBase64 = await fileToBase64String(thumbnails![0]);
+
     mutation.mutate({
       title, description, body,
-      tags: tags.map(t => t.value)
+      is_published: isPublished,
+      tags: tags.map(t => t.value),
+      thumbnail: thumbnailBase64,
     });
   };
 
   return (
-    <form className="p-2 my-4" onSubmit={handleSubmit}>
+    <form className="shadow-sm rounded p-4 my-4" onSubmit={handleSubmit}>
       <div className="mb-3">
         <label htmlFor="title" className="form-label">Title</label>
         <input
@@ -99,12 +106,37 @@ const PostsAdd: FC = () => {
       </div>
 
       <div className="mb-3">
+        <label htmlFor="thumbnail" className="form-label">Thumbnail</label>
+        <input
+          id="thumbnail"
+          name="thumbnail"
+          type="file"
+          className="form-control"
+          accept="image/*"
+          required
+          onChange={(e) => setThumbnails(e.target.files)}
+        />
+      </div>
+
+      <div className="mb-3">
         <label htmlFor="body" className="form-label">Body</label>
         <MarkdownEditor
           value={body}
           onChange={setBody}
           placeholder="Enter post's body"
         />
+      </div>
+
+      <div className="form-check mb-3">
+        <input
+          id="is_published"
+          name="is_published"
+          className="form-check-input"
+          type="checkbox"
+          checked={isPublished}
+          onChange={(e) => setIsPublished(e.target.checked)}
+        />
+        <label className="form-check-label" htmlFor="is_published">Publish</label>
       </div>
 
       <div className="d-flex justify-content-end">
