@@ -106,7 +106,7 @@ const RegisterForm: FC = () => {
           name="password2"
           className="form-control"
           type="password"
-          placeholder="Enter password"
+          placeholder="Confirm password"
           required
           minLength={6}
           value={password2}

@@ -73,7 +73,7 @@ const LoginForm: FC = () => {
           id="password"
           name="password"
           type="password"
-          placeholder="Password"
+          placeholder="Enter password"
           className="form-control"
           required
           onChange={handleInputChange}
