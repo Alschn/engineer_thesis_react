@@ -3,32 +3,33 @@ import { Card } from "react-bootstrap";
 import CardHeader from "react-bootstrap/CardHeader";
 import { Link } from "react-router-dom";
 import { ListPost } from "../../api/types";
+import PostAuthorMeta from "./PostAuthorMeta";
+import TagBadge from "./TagBadge";
 
 interface PostListItemProps {
   post: ListPost;
 }
 
 const PostListItem: FC<PostListItemProps> = ({ post }) => {
-  const createdAt = new Date(post.created_at);
-
   return (
-    <Card>
+    <Card className="shadow border-0" style={{ height: "100%" }}>
+      <img
+        src={post.thumbnail}
+        alt="Thumbnail"
+        className="rounded-top"
+        height="300"
+      />
       <CardHeader>
-        <Card.Title>
+        <Card.Link as={Link} to={`/posts/${post.slug}`} className="fs-4 fw-bold text-dark text-decoration-none">
           {post.title}
-        </Card.Title>
-        <Card.Subtitle className="mb-2">
-          {post.author.username}
-        </Card.Subtitle>
-        <Card.Subtitle className="text-muted mb-2">
-          {createdAt.toLocaleString()}
-        </Card.Subtitle>
-        <Card.Link as={Link} to={`/posts/${post.slug}`} className="text-decoration-none">
-          {post.slug}
         </Card.Link>
+        <PostAuthorMeta
+          author={post.author}
+          createdAt={post.created_at}
+        />
         <div className="d-flex gap-2 mt-2">
           {post.tags.map((tag) => (
-            <span className="badge text-bg-primary" key={`badge-tag-${tag}`}>{tag}</span>
+            <TagBadge label={tag.tag} color={tag.color} key={tag.slug}/>
           ))}
         </div>
       </CardHeader>
@@ -37,6 +38,11 @@ const PostListItem: FC<PostListItemProps> = ({ post }) => {
           {post.description}
         </Card.Text>
       </Card.Body>
+      <div className="d-flex justify-content-end px-3 pb-2">
+        <Card.Link as={Link} to={`/posts/${post.slug}`} className="btn btn-sm btn-dark">
+          Show details
+        </Card.Link>
+      </div>
     </Card>
   );
 };
