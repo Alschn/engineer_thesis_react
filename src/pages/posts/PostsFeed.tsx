@@ -5,6 +5,7 @@ import PostsApi, { PostsFilters, PostsOrdering } from "../../api/posts";
 import { SelectOption } from "../../api/types";
 import PostListItem from "../../components/posts/PostListItem";
 import useDebounce from "../../hooks/useDebounce";
+import { getNextPageParam } from "../../utils/tanstack-query";
 
 const orderingOptions = [
   { value: "created_at", label: "Created (ascending)" },
@@ -34,16 +35,7 @@ const PostsFeed: FC = () => {
       page: pageParam,
       page_size: 10
     } as PostsFilters),
-    getNextPageParam: (lastPage) => {
-      const nextPage: string | null = lastPage.data.next;
-      if (nextPage && nextPage.includes("page=")) {
-        const url = new URL(nextPage);
-        const page = url.searchParams.get("page")!;
-        const parsed = parseInt(page);
-        return !isNaN(parsed) ? parsed : undefined;
-      }
-      return undefined;
-    }
+    getNextPageParam: getNextPageParam
   });
 
   const posts = useMemo(() => {

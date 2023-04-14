@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import PostsApi, { PostCommentsFilters } from "../../api/posts";
 import { SelectOption } from "../../api/types";
 import usePost from "../../hooks/usePost";
+import { getNextPageParam } from "../../utils/tanstack-query";
 import CommentAddForm from "../forms/CommentAddForm";
 import CommentListItemSkeleton from "../skeletons/CommentListItemSkeleton";
 import CommentListItem from "./CommentListItem";
@@ -31,13 +32,7 @@ const CommentSection: FC = () => {
     queryFn: ({ queryKey, pageParam = 1 }) => PostsApi.getAllComments(
       queryKey[1] as string, { page: pageParam, ...queryKey[3] as PostCommentsFilters }
     ),
-    getNextPageParam: (lastPage) => {
-      const nextPage = lastPage.data.next;
-      if (!nextPage) return undefined;
-      const url = new URL(nextPage);
-      const parsed = parseInt(url.searchParams.get("page")!);
-      return !isNaN(parsed) ? parsed : undefined;
-    }
+    getNextPageParam: getNextPageParam
   });
 
   const comments = useMemo(() => {
