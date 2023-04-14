@@ -8,7 +8,9 @@ import { toast } from "react-toastify";
 import PostsApi, { PostUpdatePayload } from "../../api/posts";
 import PostDeleteModal from "../../components/modals/PostDeleteModal";
 import CommentSection from "../../components/posts/CommentSection";
+import PostAuthorMeta from "../../components/posts/PostAuthorMeta";
 import PostBody from "../../components/posts/PostBody";
+import TagBadge from "../../components/posts/TagBadge";
 import { PostContext } from "../../context/PostContext";
 import { useAuth } from "../../hooks/useAuth";
 
@@ -110,40 +112,70 @@ const PostsDetail: FC = () => {
 
 
   if (query.isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ height: "calc(100vh - 150px)" }}>
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
   }
 
   if (query.isError) {
-    return <div>Something went wrong...</div>;
+    return <p className="text-danger fw-bold">Something went wrong...</p>;
   }
 
   if (query.isSuccess && post) {
+    const isCurrentUser = isAuthenticated && user?.username === post.author.username;
+
     return (
       <>
-        <Card className="mb-3">
-          <Card.Header>
-            <Card.Title>{post.title}</Card.Title>
-            <Card.Subtitle className="mb-1">Description: {post.description}</Card.Subtitle>
-            <div className="mb-2">
-              <Link to={`/profiles/${post.author.username}`}>
-                Author: {post.author.username}
-              </Link>
+        <Card className="shadow-sm rounded mb-4">
+          <Card.Header className="bg-white p-0 pb-3">
+            <div className="d-flex flex-column flex-lg-row gap-3">
+              <img
+                src={post.thumbnail}
+                alt="thumbnail"
+                height="300"
+                className="border"
+              />
+              <div className="d-flex flex-column p-3">
+                <Card.Title className="fs-1 mb-3">
+                  Title: {post.title}
+                </Card.Title>
+                <Card.Subtitle className="fs-5 mb-3">
+                  Description: {post.description}
+                </Card.Subtitle>
+                <div className="d-flex align-items-center gap-1 mb-3" style={{ fontSize: "1.1em" }}>
+                  <Card.Subtitle className="fs-6">Tags:</Card.Subtitle>
+                  {post.tags.map((tag) => (
+                    <TagBadge label={tag.tag} color={tag.color} key={tag.slug}/>
+                  ))}
+                </div>
+                <Card.Subtitle className="fs-5">Likes: {post.favourites_count}</Card.Subtitle>
+                <div className="mb-auto"></div>
+                <PostAuthorMeta
+                  author={post.author}
+                  createdAt={post.created_at}
+                />
+              </div>
             </div>
-            <div className="d-flex gap-1 mb-2" style={{ fontSize: "1.1em" }}>
-              {post.tags.map((tag) => (
-                <span className="badge bg-primary" key={`tag-${tag}`}>{tag}</span>
-              ))}
-            </div>
-            <p>Likes: {post.favourites_count}</p>
-            <div className="d-flex justify-content-end gap-2">
-              {isAuthenticated && !isEditing && post.author.username === user!.username && (
-                <button className="btn btn-outline-dark" onClick={() => setIsEditing(true)}>
+
+            <div className="d-flex justify-content-end gap-2 px-3">
+              {isCurrentUser && !isEditing && (
+                <button
+                  id="post-edit"
+                  className="btn btn-outline-dark"
+                  onClick={() => setIsEditing(true)}
+                >
                   Edit
                 </button>
               )}
-              {isAuthenticated && post.author.username !== user!.username && (
+
+              {!isCurrentUser && (
                 post.is_favourited ? (
                   <button
+                    id="post-unfavourite"
                     className="btn btn-outline-danger"
                     onClick={() => unfavouriteMutation.mutate()}
                     disabled={unfavouriteMutation.isLoading}
@@ -152,6 +184,7 @@ const PostsDetail: FC = () => {
                   </button>
                 ) : (
                   <button
+                    id="post-favourite"
                     className="btn btn-outline-primary"
                     onClick={() => favouriteMutation.mutate()}
                     disabled={favouriteMutation.isLoading}
@@ -160,20 +193,25 @@ const PostsDetail: FC = () => {
                   </button>
                 )
               )}
-              {isAuthenticated && post.author.username === user?.username && (
+              {isCurrentUser && (
                 <>
                   <PostDeleteModal
-                    postSlug={post.slug}
+                    postSlug={postSlug!}
                     isOpen={isOpenDeleteModal}
                     onClose={handleCloseDeleteModal}
                   />
-                  <button className="btn btn-danger" onClick={handleOpenDeleteModal}>
+                  <button
+                    id="post-delete"
+                    className="btn btn-danger"
+                    onClick={handleOpenDeleteModal}
+                  >
                     Delete
                   </button>
                 </>
               )}
             </div>
           </Card.Header>
+
           <PostBody
             body={post.body}
             handleCancelEdit={() => setIsEditing(false)}
@@ -181,6 +219,7 @@ const PostsDetail: FC = () => {
             handlePostUpdate={handlePostUpdate}
           />
         </Card>
+
         <PostContext.Provider value={{ post }}>
           <CommentSection/>
         </PostContext.Provider>

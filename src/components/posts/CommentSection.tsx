@@ -7,6 +7,7 @@ import PostsApi, { PostCommentsFilters } from "../../api/posts";
 import { SelectOption } from "../../api/types";
 import usePost from "../../hooks/usePost";
 import CommentAddForm from "../forms/CommentAddForm";
+import CommentListItemSkeleton from "../skeletons/CommentListItemSkeleton";
 import CommentListItem from "./CommentListItem";
 
 const commentsOrderingItems = [
@@ -69,54 +70,68 @@ const CommentSection: FC = () => {
   };
 
   return (
-    <Card className="mb-3">
-      <Card.Header>
-        <Card.Title>
-          <div className="d-flex align-items-center">
-            <div className="flex-grow-1">
-              {commentsQuery.isLoading && (
-                <p>Loading...</p>
-              )}
-              {commentsQuery.isSuccess && (
-                <p>Comments ({totalComments}):</p>
-              )}
-            </div>
-            <div style={{ minWidth: "200px" }}>
-              <Select
-                id="comments_ordering"
-                name="comments_ordering"
-                isClearable={false}
-                isSearchable={false}
-                options={commentsOrderingItems}
-                value={commentsOrdering}
-                onChange={(newValue => setCommentsOrdering(newValue as SelectOption))}
-              />
-            </div>
+    <Card className="shadow-sm mb-3">
+      <Card.Header className="bg-white">
+        <div className="d-flex align-items-center pt-1">
+          <div className="flex-grow-1">
+            {commentsQuery.isLoading && (
+              <p className="placeholder placeholder-glow"></p>
+            )}
+            {commentsQuery.isSuccess && (
+              <Card.Title>Comments ({totalComments}):</Card.Title>
+            )}
           </div>
-        </Card.Title>
+
+          <div style={{ minWidth: "200px" }}>
+            <Select
+              id="comments_ordering"
+              name="comments_ordering"
+              isClearable={false}
+              isSearchable={false}
+              options={commentsOrderingItems}
+              value={commentsOrdering}
+              onChange={(newValue => setCommentsOrdering(newValue as SelectOption))}
+            />
+          </div>
+        </div>
       </Card.Header>
+
       <Card.Body className="p-2">
         {commentsQuery.isLoading && (
-          <p>Loading comments...</p>
+          <div className="d-flex flex-column gap-2 p-2">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <CommentListItemSkeleton key={`comment-skeleton-${i}`}/>
+            ))}
+          </div>
         )}
         {commentsQuery.isError && (
-          <p>Something went wrong...</p>
+          <p className="text-danger fw-bold">Something went wrong...</p>
         )}
-        {commentsQuery.isSuccess && comments.map((comment) => (
-          <CommentListItem comment={comment} key={`comment-${comment.id}`}/>
-        ))}
+        {commentsQuery.isSuccess && (
+          <div className="d-flex flex-column gap-2 p-2">
+            {comments.map((comment) => (
+              <CommentListItem comment={comment} key={`comment-${comment.id}`}/>
+            ))}
+          </div>
+        )}
         {commentsQuery.hasNextPage && (
-          <button className="btn btn-outline-primary" onClick={() => commentsQuery.fetchNextPage}>
+          <button
+            id="comments-load-more"
+            className="btn btn-outline-primary"
+            onClick={() => commentsQuery.fetchNextPage}
+            disabled={commentsQuery.isFetchingNextPage}
+          >
             Load more...
           </button>
         )}
         {commentsQuery.isFetchingNextPage && (
-          <p>Loading more comments...</p>
+          <p className="fw-bold">Loading more comments...</p>
         )}
+
         <CommentAddForm
-          value={commentBody}
           isSubmitting={commentSubmitLocked || addCommentMutation.isLoading}
           onClear={() => setCommentBody("")}
+          value={commentBody}
           onChange={setCommentBody}
           onSubmit={handleCommentSubmit}
         />

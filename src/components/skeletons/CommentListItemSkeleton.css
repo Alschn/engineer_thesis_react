@@ -1,0 +1,22 @@
+.placeholder-author {
+    width: 60px;
+}
+
+.placeholder-date {
+    width: 100px;
+}
+
+.placeholder-content {
+    width: 300px;
+}
+
+.placeholder-author, .placeholder-date, .placeholder-content {
+    height: 1em;
+    margin-bottom: 4px;
+}
+
+.placeholder-image {
+    height: 48px;
+    width: 48px;
+    border-radius: 50%;
+}
