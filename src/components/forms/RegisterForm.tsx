@@ -54,7 +54,7 @@ const RegisterForm: FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} style={{ minWidth: "320px" }}>
       <div className="mb-3">
         <label htmlFor="email" className="form-label">Email address</label>
         <input
@@ -108,9 +108,9 @@ const RegisterForm: FC = () => {
           type="password"
           placeholder="Enter password"
           required
+          minLength={6}
           value={password2}
           onChange={handleInputChange}
-          minLength={6}
         />
       </div>
 
@@ -119,7 +119,7 @@ const RegisterForm: FC = () => {
       </div>
 
       <div className="d-flex justify-content-center align-items-center mt-4">
-        <button className="btn btn-primary" type="submit">
+        <button className="btn btn-primary" type="submit" disabled={mutation.isLoading}>
           Submit
         </button>
       </div>

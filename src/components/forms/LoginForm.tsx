@@ -53,7 +53,7 @@ const LoginForm: FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} style={{ minWidth: "320px" }}>
       <div className="mb-3">
         <label htmlFor="email" className="form-label">Email address</label>
         <input
