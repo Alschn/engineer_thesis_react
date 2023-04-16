@@ -1,7 +1,7 @@
 import { FC } from "react";
-import ReactPaginate from "react-paginate";
+import ReactPaginate, { type ReactPaginateProps } from "react-paginate";
 
-interface PaginationProps {
+interface PaginationProps extends Omit<ReactPaginateProps, 'pageCount' | 'onPageChange'> {
   currentPage: number,
   pagesCount: number,
   onPageChange: (page: number) => void,
@@ -11,7 +11,8 @@ const Pagination: FC<PaginationProps> = (
   {
     currentPage,
     pagesCount,
-    onPageChange
+    onPageChange,
+    ...rest
   }
 ) => {
   return (
@@ -22,8 +23,6 @@ const Pagination: FC<PaginationProps> = (
       forcePage={currentPage - 1}
       pageCount={pagesCount}
       onPageChange={({ selected }) => onPageChange(selected + 1)}
-      // pageRangeDisplayed={4}
-      // marginPagesDisplayed={2}
       breakClassName="page-item"
       breakLinkClassName="page-link"
       containerClassName="pagination justify-content-center"
@@ -34,6 +33,7 @@ const Pagination: FC<PaginationProps> = (
       nextClassName="page-item"
       nextLinkClassName="page-link"
       activeClassName="active"
+      {...rest}
     />
   );
 };

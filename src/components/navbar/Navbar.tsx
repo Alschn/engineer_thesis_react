@@ -1,26 +1,33 @@
 import { FC } from "react";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
-import Navbar from "react-bootstrap/Navbar";
+import Navbar, { NavbarProps } from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import { Link, NavLink, useNavigate } from "react-router-dom";
+import AuthApi from "../../api/auth";
 import { useAuth } from "../../hooks/useAuth";
 
-const MainNavbar: FC = () => {
+interface MainNavbarProps extends NavbarProps {
+  brand?: string;
+}
+
+const MainNavbar: FC<MainNavbarProps> = ({ brand = 'Thesis - React', ...rest }) => {
   const { isAuthenticated, user, setToken } = useAuth();
   const navigate = useNavigate();
 
   const logout = () => {
-    localStorage.removeItem('access');
-    localStorage.removeItem('refresh');
-    setToken(null);
-    navigate('/auth/login');
+    AuthApi.logout().finally(() => {
+      localStorage.removeItem('access');
+      localStorage.removeItem('refresh');
+      setToken(null);
+      navigate('/auth/login');
+    });
   };
 
   return (
-    <Navbar expand="md">
+    <Navbar expand="md" {...rest}>
       <Container>
-        <Navbar.Brand href="/">Thesis - React</Navbar.Brand>
+        <Navbar.Brand href="/">{brand}</Navbar.Brand>
         <Navbar.Toggle aria-controls="navbar-collapse"/>
         <Navbar.Collapse id="navbar-collapse">
           <Nav className="me-auto">

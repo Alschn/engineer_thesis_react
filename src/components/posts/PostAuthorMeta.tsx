@@ -26,8 +26,8 @@ const PostAuthorMeta: FC<PostAuthorMetaProps> = ({ author, createdAt }) => {
           </a>
         </div>
         <span className="text-muted fs-6">
-      {formattedCreatedAt}
-    </span>
+          {formattedCreatedAt}
+        </span>
       </div>
     </div>
   );
