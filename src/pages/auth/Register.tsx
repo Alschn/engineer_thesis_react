@@ -1,17 +1,16 @@
 import { FC } from "react";
-import { Card, Container } from "react-bootstrap";
+import AuthCard from "../../components/cards/AuthCard";
 import RegisterForm from "../../components/forms/RegisterForm";
 
 const Register: FC = () => {
   return (
-    <Container>
-      <Card>
-        <Card.Header>Register</Card.Header>
-        <Card.Body>
-          <RegisterForm/>
-        </Card.Body>
-      </Card>
-    </Container>
+    <AuthCard
+      title={
+        <h1>Register</h1>
+      }
+    >
+      <RegisterForm/>
+    </AuthCard>
   );
 };
 

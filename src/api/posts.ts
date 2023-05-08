@@ -7,6 +7,8 @@ export interface PostCreatePayload {
   description: string;
   body: string;
   tags: string[];
+  is_published: boolean;
+  thumbnail: string;
 }
 
 export type PostUpdatePayload = Partial<Pick<Post, 'body'>>;

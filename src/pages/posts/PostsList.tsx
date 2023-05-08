@@ -7,6 +7,7 @@ import { SelectOption } from "../../api/types";
 import PostsFiltersModal from "../../components/modals/PostsFiltersModal";
 import Pagination from "../../components/pagination/Pagination";
 import PostListItem from "../../components/posts/PostListItem";
+import PostListItemSkeleton from "../../components/skeletons/PostListItemSkeleton";
 import useDebounce from "../../hooks/useDebounce";
 
 const pageSizes = [
@@ -14,18 +15,21 @@ const pageSizes = [
   { value: 20, label: "20" },
   { value: 50, label: "50" },
   { value: 100, label: "100" },
-];
+  { value: 1000, label: "1000" }
+] as const;
+
 const orderingOptions = [
   { value: "created_at", label: "Created (ascending)" },
   { value: "-created_at", label: "Created (descending)" },
   { value: "updated_at", label: "Updated (ascending)" },
   { value: "-updated_at", label: "Updated (descending)" },
-];
-
+] as const;
 
 const PostsList: FC = () => {
   const [page, setPage] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<SelectOption<number>>({ value: 10, label: "10" });
+  const [pageSize, setPageSize] = useState<SelectOption<number>>(
+    pageSizes.find((o) => o.value === 50)!
+  );
   const [ordering, setOrdering] = useState<SelectOption>(
     orderingOptions.find((o) => o.value === "-created_at")!
   );
@@ -80,7 +84,7 @@ const PostsList: FC = () => {
       // set default values
       // todo: refactor this, maybe use reducer here
       setPage(1);
-      setPageSize({ value: 10, label: "10" });
+      setPageSize(pageSizes.find((o) => o.value === 50)!);
       setOrdering(orderingOptions.find((o) => o.value === "-created_at")!);
       setSearch("");
       // clear filters
@@ -88,8 +92,6 @@ const PostsList: FC = () => {
     }
     handleCloseModal();
   };
-
-  // todo: display applied filters
 
   return (
     <>
@@ -150,37 +152,41 @@ const PostsList: FC = () => {
         </button>
       </div>
 
-      {isLoading && (
-        <p>Loading...</p>
-      )}
+      <article className="row gy-4 mb-3">
+        {isLoading && Array.from(Array(6)).map((_, i) => (
+          <div className="col col-md-6 col-xl-4" key={`post-skeleton-${i}`}>
+            <PostListItemSkeleton/>
+          </div>
+        ))}
 
-      {isError && (
-        <p>Something went wrong...</p>
-      )}
+        {isError && (
+          <p className="text-danger fw-bold">Something went wrong...</p>
+        )}
 
-      {isSuccess && (
-        <>
-          <article className="d-flex flex-column gap-3 mb-3">
+        {isSuccess && (
+          <>
             {total > 0 ? (
               posts.map((post) => (
-                <PostListItem post={post} key={`post-${post.id}`}/>
+                <div className="col col-md-6 col-xl-4" key={`post-${post.id}`}>
+                  <PostListItem post={post}/>
+                </div>
               ))
             ) : (
-              <p>No posts found</p>
+              <p className="fw-bold">No posts found...</p>
             )}
-          </article>
 
-          {total > 0 && (
-            <nav className="card-footer p-0 mb-3">
-              <Pagination
-                currentPage={page}
-                pagesCount={Math.ceil(total / pageSize.value)}
-                onPageChange={setPage}
-              />
-            </nav>
-          )}
-        </>
-      )}
+            {total > 0 && (
+              <nav className="card-footer p-0 mb-3">
+                <Pagination
+                  currentPage={page}
+                  pagesCount={Math.ceil(total / pageSize.value)}
+                  onPageChange={setPage}
+                />
+              </nav>
+            )}
+          </>
+        )}
+      </article>
     </>
   );
 };

@@ -5,27 +5,26 @@ import PostsApi, { PostsFilters, PostsOrdering } from "../../api/posts";
 import { SelectOption } from "../../api/types";
 import PostListItem from "../../components/posts/PostListItem";
 import useDebounce from "../../hooks/useDebounce";
+import { getNextPageParam } from "../../utils/tanstack-query";
 
 const orderingOptions = [
   { value: "created_at", label: "Created (ascending)" },
   { value: "-created_at", label: "Created (descending)" },
   { value: "updated_at", label: "Updated (ascending)" },
   { value: "-updated_at", label: "Updated (descending)" },
-];
+] as const;
 
 const PostsFeed: FC = () => {
   const [ordering, setOrdering] = useState<SelectOption>(
-    { value: "-created_at", label: "Created (descending)" }
+    orderingOptions.find(o => o.value === "-created_at")!
   );
   const [search, setSearch] = useState<string>("");
   const debouncedSearch = useDebounce(search, 500);
 
-  const queryParams: PostsFilters = useMemo(() => {
-    return {
-      ordering: ordering.value as PostsOrdering,
-      search: debouncedSearch,
-    };
-  }, [ordering, search]);
+  const queryParams: PostsFilters = {
+    ordering: ordering.value as PostsOrdering,
+    search: debouncedSearch,
+  };
 
   const query = useInfiniteQuery({
     queryKey: ["posts", queryParams],
@@ -34,16 +33,7 @@ const PostsFeed: FC = () => {
       page: pageParam,
       page_size: 10
     } as PostsFilters),
-    getNextPageParam: (lastPage) => {
-      const nextPage: string | null = lastPage.data.next;
-      if (nextPage && nextPage.includes("page=")) {
-        const url = new URL(nextPage);
-        const page = url.searchParams.get("page")!;
-        const parsed = parseInt(page);
-        return !isNaN(parsed) ? parsed : undefined;
-      }
-      return undefined;
-    }
+    getNextPageParam: getNextPageParam
   });
 
   const posts = useMemo(() => {
@@ -97,25 +87,25 @@ const PostsFeed: FC = () => {
       </div>
 
       {query.isLoading && (
-        <p>Loading...</p>
+        <div className="d-flex justify-content-center align-items-center" style={{ height: "100px" }}>
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
       )}
-
       {query.isError && (
-        <p>Something went wrong...</p>
+        <p className="text-danger fw-bold">Something went wrong...</p>
       )}
-
       {query.isSuccess && (
         <>
-          <div className="d-flex flex-column gap-3">
+          <section className="d-flex flex-column gap-3">
             {posts.map(post => (
               <PostListItem post={post} key={`post-list-item-${post.id}`}/>
             ))}
-          </div>
-
+          </section>
           {query.isFetchingNextPage && (
             <h4 className="my-2">Loading more...</h4>
           )}
-
           {!query.hasNextPage && (
             <h4 className="my-2">No more posts...</h4>
           )}

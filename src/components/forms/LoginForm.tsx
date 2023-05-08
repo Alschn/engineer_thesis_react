@@ -17,7 +17,7 @@ const LoginForm: FC = () => {
   const mutation = useMutation({
       mutationFn: (data: LoginPayload) => AuthApi.login(data),
       onSuccess: ({ data }) => {
-        setToken(jwtDecode(data.access));
+        setToken(data.access);
         localStorage.setItem('access', data.access);
         localStorage.setItem('refresh', data.refresh);
         toast.success('Logged in successfully');
@@ -53,7 +53,7 @@ const LoginForm: FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} style={{ minWidth: "320px" }}>
       <div className="mb-3">
         <label htmlFor="email" className="form-label">Email address</label>
         <input
@@ -73,7 +73,7 @@ const LoginForm: FC = () => {
           id="password"
           name="password"
           type="password"
-          placeholder="Password"
+          placeholder="Enter password"
           className="form-control"
           required
           onChange={handleInputChange}

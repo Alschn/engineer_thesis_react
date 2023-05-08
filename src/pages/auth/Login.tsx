@@ -1,19 +1,16 @@
 import { FC } from "react";
-import { Card, Container } from "react-bootstrap";
+import AuthCard from "../../components/cards/AuthCard";
 import LoginForm from "../../components/forms/LoginForm";
 
 const Login: FC = () => {
   return (
-    <Container>
-      <Card>
-        <Card.Header>
-          <Card.Title>Login</Card.Title>
-        </Card.Header>
-        <Card.Body className="p-4">
-          <LoginForm/>
-        </Card.Body>
-      </Card>
-    </Container>
+    <AuthCard
+      title={
+        <h1>Login</h1>
+      }
+    >
+      <LoginForm/>
+    </AuthCard>
   );
 };
 

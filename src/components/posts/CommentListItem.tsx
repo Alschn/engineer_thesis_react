@@ -4,7 +4,9 @@ import { Link } from "react-router-dom";
 import type { Comment } from "../../api/types";
 import { useAuth } from "../../hooks/useAuth";
 import usePost from "../../hooks/usePost";
+import { formatDate } from "../../utils/dates";
 import CommentDeleteModal from "../modals/CommentDeleteModal";
+import defaultAvatar from "../../assets/avatar.jpg";
 
 interface CommentListItemProps {
   comment: Comment;
@@ -20,23 +22,34 @@ const CommentListItem: FC<CommentListItemProps> = ({ comment }) => {
 
   const handleCloseModal = () => setIsOpenModal(false);
 
-  const createdAt = new Date(comment.created_at);
+  const isCurrentUser = isAuthenticated && user?.username === comment.author.username;
+  const formattedDate = formatDate(comment.created_at);
 
   return (
-    <Card className="mb-2">
-      <Card.Body className="px-3 py-2">
-        <Card.Title className="d-inline">
-          <Link
-            to="/profiles/{comment.author.username}"
-            className="text-decoration-none"
-          >
-            {comment.author.username}
-          </Link>
-          <Card.Subtitle className="d-inline-block text-muted mb-2">
-            {createdAt.toLocaleString()}
+    <div className="d-flex flex-row gap-2">
+      <div>
+        <img
+          src={comment.author.image || defaultAvatar}
+          alt="avatar"
+          height="48"
+          className="rounded-circle"
+        />
+      </div>
+      <Card className="shadow-sm rounded-4 mb-2">
+        <Card.Body className="px-3 py-2">
+          <Card.Title as="h5" className="d-inline">
+            <Link
+              to={`/profiles/${comment.author.username}`}
+              className="text-decoration-none"
+            >
+              {comment.author.username}
+            </Link>
+          </Card.Title>
+          <Card.Subtitle as="h6" className="d-inline-block text-muted mb-2">
+            {formattedDate}
           </Card.Subtitle>
           <Card.Text>{comment.body}</Card.Text>
-          {isAuthenticated && user?.username === comment.author.username && (
+          {isCurrentUser && (
             <>
               <CommentDeleteModal
                 isOpen={isOpenModal}
@@ -54,9 +67,9 @@ const CommentListItem: FC<CommentListItemProps> = ({ comment }) => {
               </div>
             </>
           )}
-        </Card.Title>
-      </Card.Body>
-    </Card>
+        </Card.Body>
+      </Card>
+    </div>
   );
 };
 
