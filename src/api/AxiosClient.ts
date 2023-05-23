@@ -22,7 +22,7 @@ AxiosClient.interceptors.response.use(
   (response) => response,
   (error) => {
     const { response, config } = error;
-    if (response.status !== 401) return Promise.reject(error);
+    if (!response || response.status !== 401) return Promise.reject(error);
 
     const refreshToken = localStorage.getItem("refresh");
 
