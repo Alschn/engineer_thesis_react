@@ -78,9 +78,7 @@ const ProfilesDetail: FC = () => {
     }
   });
 
-  const profile = useMemo(() => {
-    return query.data?.data || null;
-  }, [query]);
+  const profile = query.data?.data || null;
 
   const followersQuery = useInfiniteQuery({
     queryKey: ["profiles-followers", username],
@@ -90,7 +88,7 @@ const ProfilesDetail: FC = () => {
 
   const followers = useMemo(() => {
     return followersQuery.data?.pages?.flatMap(p => p.data.results) || [];
-  }, [followersQuery]);
+  }, [followersQuery.data]);
 
   const followedQuery = useInfiniteQuery({
     queryKey: ["profiles-followed", username],
@@ -100,7 +98,7 @@ const ProfilesDetail: FC = () => {
 
   const followed = useMemo(() => {
     return followedQuery.data?.pages?.flatMap(p => p.data.results) || [];
-  }, [followedQuery]);
+  }, [followedQuery.data]);
 
   const postsQuery = useInfiniteQuery({
     queryKey: ["posts-authors", username],
@@ -110,7 +108,7 @@ const ProfilesDetail: FC = () => {
 
   const createdPosts = useMemo(() => {
     return postsQuery.data?.pages?.flatMap(p => p.data.results) || [];
-  }, [postsQuery]);
+  }, [postsQuery.data]);
 
   const favouritesQuery = useInfiniteQuery({
     queryKey: ["posts-favourites", username],
@@ -118,9 +116,9 @@ const ProfilesDetail: FC = () => {
     enabled: !!profile && isCurrentUser
   });
 
-  const favourites = useMemo(() => {
+  const favouritePosts = useMemo(() => {
     return favouritesQuery.data?.pages?.flatMap(p => p.data.results) || [];
-  }, [favouritesQuery]);
+  }, [favouritesQuery.data]);
 
   if (query.isLoading) {
     return <p>Loading...</p>;
@@ -209,19 +207,27 @@ const ProfilesDetail: FC = () => {
           </div>
         </div>
 
-        <div className="col-12">
-          <div className="card p-4">
-            <h3>Favourite Posts ({profile.favourites_count}):</h3>
-
-            TODO:
+        {isCurrentUser && (
+          <div className="col-12">
+            <div className="card p-4">
+              <h3>Favourite Posts ({profile.favourites_count}):</h3>
+              <div className="d-flex flex-column gap-2" style={{ height: "300px", "overflowY": "auto" }}>
+                {favouritePosts.map((post) => (
+                  <a href={`/posts/${post.slug}`} key={`favourite-${post.id}`}>{post.slug}</a>
+                ))}
+              </div>
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="col-12">
           <div className="card p-4">
             <h3>Created Posts ({profile.posts_count}):</h3>
-
-            TODO:
+            <div className="d-flex flex-column gap-2" style={{ height: "300px", "overflowY": "auto" }}>
+              {createdPosts.map((post) => (
+                <a href={`/posts/${post.slug}`} key={`created-${post.id}`}>{post.slug}</a>
+              ))}
+            </div>
           </div>
         </div>
       </div>

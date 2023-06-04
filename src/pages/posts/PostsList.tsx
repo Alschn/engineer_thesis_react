@@ -152,7 +152,7 @@ const PostsList: FC = () => {
         </button>
       </div>
 
-      <article className="row gy-4 mb-3">
+      <section className="row gy-4 mb-3">
         {isLoading && Array.from(Array(6)).map((_, i) => (
           <div className="col col-md-6 col-xl-4" key={`post-skeleton-${i}`}>
             <PostListItemSkeleton/>
@@ -167,9 +167,9 @@ const PostsList: FC = () => {
           <>
             {total > 0 ? (
               posts.map((post) => (
-                <div className="col col-md-6 col-xl-4" key={`post-${post.id}`}>
+                <article className="col col-md-6 col-xl-4" key={`post-${post.id}`}>
                   <PostListItem post={post}/>
-                </div>
+                </article>
               ))
             ) : (
               <p className="fw-bold">No posts found...</p>
@@ -186,7 +186,7 @@ const PostsList: FC = () => {
             )}
           </>
         )}
-      </article>
+      </section>
     </>
   );
 };

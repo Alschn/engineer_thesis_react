@@ -26,6 +26,7 @@ specifiers:
   jsdom: ^21.1.0
   jwt-decode: ^3.1.2
   msw: ^1.1.0
+  playwright-msw: ^2.2.1
   react: ^18.2.0
   react-bootstrap: ^2.7.2
   react-dom: ^18.2.0
@@ -72,6 +73,7 @@ devDependencies:
   '@vitest/ui': 0.29.3
   jsdom: 21.1.1
   msw: 1.1.0_typescript@4.9.5
+  playwright-msw: 2.2.1_rroq43wb6kakqgobzenuc3tuw4
   typescript: 4.9.5
   vite: 4.2.0
   vitest: 0.29.3_trdqeyfrbgdl5q7msjjsocgase
@@ -3528,6 +3530,19 @@ packages:
     resolution: {integrity: sha512-a1dFgCNQw4vCsG7bnojZjDnPewZcw7tZUNFN0ZkcLYKj+mPmXvg4MpaaKZ5SgqPsOmqIf2YsVRkgqiRDxD+fDQ==}
     engines: {node: '>=14'}
     hasBin: true
+    dev: true
+
+  /playwright-msw/2.2.1_rroq43wb6kakqgobzenuc3tuw4:
+    resolution: {integrity: sha512-LjT68LWqzJX8boy4KbnPp5ACLf7WDpt6RUem0tQQcQKys+45KNlluzBx8HEl1HNiCBYV/XZw1aI1aD2giKXWRg==}
+    engines: {node: '>=14'}
+    peerDependencies:
+      '@playwright/test': '>=1.20.0'
+      msw: '>=0.47.3'
+    dependencies:
+      '@mswjs/cookies': 0.2.2
+      '@playwright/test': 1.31.2
+      msw: 1.1.0_typescript@4.9.5
+      strict-event-emitter: 0.4.6
     dev: true
 
   /postcss/8.4.21:

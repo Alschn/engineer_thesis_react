@@ -1,5 +1,5 @@
 import jwtDecode from "jwt-decode";
-import { createContext, Dispatch, FC, ReactNode, SetStateAction, useMemo, useState, } from "react";
+import { createContext, Dispatch, FC, ReactNode, SetStateAction, useState } from "react";
 
 interface JWTContent {
   user_id: number,
@@ -7,6 +7,15 @@ interface JWTContent {
   email: string,
   exp: number,
   iat: number,
+}
+
+function retrieveUser(token: string | null) {
+  if (!token) return null;
+  try {
+    return jwtDecode<JWTContent>(token);
+  } catch (e) {
+    return null;
+  }
 }
 
 interface AuthContextValues {
@@ -23,17 +32,10 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
-  const [token, setToken] = useState<string | null>(() => localStorage.getItem('access'));
-
-  const user = useMemo<JWTContent | null>(() => {
-    if (!token) return null;
-    try {
-      return jwtDecode<JWTContent>(token);
-    } catch (e) {
-      return null;
-    }
-  }, [token]);
-
+  const [token, setToken] = useState<string | null>(
+    () => localStorage.getItem('access')
+  );
+  const user = retrieveUser(token);
   const isAuthenticated = !!user;
 
   return (
